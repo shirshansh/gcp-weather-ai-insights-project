@@ -1,1 +1,6 @@
 .env
+.venv
+
+.gcloudignore
+
+test*.py
