@@ -4,3 +4,7 @@
 .gcloudignore
 
 test*.py
+
+keys/
+
+__pycache__/
