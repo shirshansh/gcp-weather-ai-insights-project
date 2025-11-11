@@ -1,3 +1,4 @@
+import re
 import os
 import json
 from datetime import datetime, timezone
@@ -14,6 +15,30 @@ LOCATION = "asia-south1"
 # Intialized Clients
 storage_client = storage.Client()
 genai_client = genai.Client(vertexai=True, project=PROJECT_ID, location=LOCATION)
+
+def clean_json_response(text):
+    """
+    Cleans model output to extract valid JSON from Markdown or noisy responses.
+    Handles cases like:
+    ```json
+    {...}
+    ```
+    or extra whitespace / comments.
+    """
+
+    if not text:
+        return None
+
+    # Remove Markdown code fences like ```json ... ```
+    text = re.sub(r"```(?:json)?", "", text)
+    text = text.replace("```", "").strip()
+
+    # Try to extract first {...} JSON block only
+    match = re.search(r"(\{.*\})", text, re.DOTALL)
+    if match:
+        text = match.group(1).strip()
+
+    return text
 
 def build_prompt(raw_data):
     """
@@ -86,6 +111,8 @@ def process_weather_data(event, context):
 
         result_text = response.text.strip()
         print("Model Response Received.")
+
+        result_text = clean_json_response(result_text)
 
         processed_json = json.loads(result_text)
 
