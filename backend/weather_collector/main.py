@@ -3,8 +3,18 @@ import json
 import os
 from datetime import datetime, timezone
 from google.cloud import storage
+from google.cloud import secretmanager
 
-API_KEY = os.getenv("API_KEY")
+def get_secret(secret_name):
+    """
+    Fetches a secret's latest version value from Google Secret Manager.
+    """
+    client = secretmanager.SecretManagerServiceClient()
+    name=f"projects/737404936819/secrets/{secret_name}/versions/1"
+    response = client.access_secret_version(request={"name": name})
+    return response.payload.data.decode("UTF-8").strip()
+
+API_KEY = get_secret("openweather_api_key")
 BUCKET_NAME = os.getenv("GCS_BUCKET_NAME")
 CITIES = ["London", "New York", "Tokyo", "Delhi", "Sydney"]
 
