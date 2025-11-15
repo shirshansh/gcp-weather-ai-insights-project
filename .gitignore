@@ -8,3 +8,10 @@ test*.py
 keys/
 
 __pycache__/
+
+.terraform/
+.terraform.lock.hcl
+*.tfstate*
+terraform.tfvars
+
+zip/
