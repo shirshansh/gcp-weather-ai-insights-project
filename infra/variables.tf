@@ -54,3 +54,9 @@ variable "openweathermap_api_key" {
   type        = string
   sensitive   = true
 }
+
+variable "gke_name" {
+  description = "Name of the GKE cluster"
+  type = string
+  default = "weather-frontend-cluster"
+}

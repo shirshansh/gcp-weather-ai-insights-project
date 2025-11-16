@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weather-frontend
+  labels:
+    app: weather-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: weather-frontend
+  template:
+    metadata:
+      labels:
+        app: weather-frontend
+    spec:
+      containers:
+        - name: weather-frontend
+          image: asia-south1-docker.pkg.dev/cme-weather-project/frontend/weather-frontend:v1
+          ports:
+            - containerPort: 80
