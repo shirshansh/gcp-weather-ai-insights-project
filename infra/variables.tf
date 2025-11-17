@@ -23,11 +23,23 @@ variable "fetch_function_name" {
   default     = "fetch_and_upload_weather_data"
 }
 
+variable "process_function_name" {
+  description = "Name of the entry point of the Cloud Function that processes weather data"
+  type        = string
+  default     = "process_weather_data"
+}
+
 # Services Name
 variable "fetch_service_name" {
-  description = "Name of the Cloud Function that fetches weather data"
+  description = "Name of the Cloud Function Service that fetches weather data"
   type        = string
   default     = "fetch-and-upload-weather-data"
+}
+
+variable "process_service_name" {
+  description = "Name of the Cloud Function Service that process weather data"
+  type        = string
+  default     = "process-weather-data"
 }
 
 #  Service Accounts Name
@@ -35,6 +47,12 @@ variable "weather_fetch_sa_name" {
   description = "Name of the Service Account primarily responsible for fetching weather data"
   type        = string
   default     = "weather-fetch-sa"
+}
+
+variable "weather_process_sa_name" {
+  description = "Name of the Service Account primarily responsible for processing weather data"
+  type        = string
+  default     = "weather-process-sa"
 }
 
 variable "scheduler_name" {
