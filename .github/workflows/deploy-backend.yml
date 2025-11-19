@@ -28,4 +28,5 @@ jobs:
             --source backend/api \
             --region ${{ secrets.GCP_REGION }} \
             --project ${{ secrets.GCP_PROJECT_ID }} \
+            --service-account weather-process-sa@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com \
             --allow-unauthenticated
