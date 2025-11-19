@@ -33,20 +33,20 @@ resource "google_cloudfunctions2_function" "weather_processor" {
     service_account_email = google_service_account.process_service_account.email
 
     environment_variables = {
-      PROJECT_ID        = var.project_id
-      GCS_BUCKET_NAME       = var.bucket_name
+      PROJECT_ID      = var.project_id
+      GCS_BUCKET_NAME = var.bucket_name
     }
   }
 
   # Event trigger
   event_trigger {
     retry_policy = "RETRY_POLICY_DO_NOT_RETRY"
-    
-    event_type = "google.cloud.storage.object.v1.finalized"
+
+    event_type     = "google.cloud.storage.object.v1.finalized"
     trigger_region = var.region
     event_filters {
       attribute = "bucket"
-      value = var.bucket_name
+      value     = var.bucket_name
     }
     service_account_email = google_service_account.process_service_account.email
   }

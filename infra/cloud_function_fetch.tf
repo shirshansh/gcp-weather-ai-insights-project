@@ -20,7 +20,7 @@ resource "google_cloudfunctions2_function" "weather_collector" {
 
   build_config {
     runtime     = "python313"
-    entry_point = var.fetch_function_name  
+    entry_point = var.fetch_function_name
 
     source {
       storage_source {
@@ -34,7 +34,7 @@ resource "google_cloudfunctions2_function" "weather_collector" {
     service_account_email = google_service_account.fetch_service_account.email
 
     environment_variables = {
-      GCS_BUCKET_NAME     = var.bucket_name
+      GCS_BUCKET_NAME = var.bucket_name
       SECRET_RESOURCE = google_secret_manager_secret_version.owm_api_key_version.name
     }
   }

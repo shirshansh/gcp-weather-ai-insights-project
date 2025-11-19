@@ -20,10 +20,10 @@ resource "google_cloud_run_service_iam_member" "weather_collector_scheduler_invo
 
 # Cloud Scheduler
 resource "google_cloud_scheduler_job" "weather_collector_scheduler" {
-  name      = var.scheduler_name
-  description      = "Fetches and Stores weather data as raw JSON every 30 minutes"
-  project   = var.project_id
-  region    = var.region
+  name        = var.scheduler_name
+  description = "Fetches and Stores weather data as raw JSON every 30 minutes"
+  project     = var.project_id
+  region      = var.region
 
   schedule  = var.schedule_frequency
   time_zone = "Asia/Calcutta"
