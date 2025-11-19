@@ -1,0 +1,52 @@
+name: Deploy Frontend to GKE
+
+on:
+  push:
+    paths:
+      - "frontend/**"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Configure gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        run: |
+          gcloud auth configure-docker ${{ secrets.GCP_REGION }}-docker.pkg.dev --quiet
+
+      - name: Build Docker image
+        run: |
+          IMAGE="${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.FRONTEND_REPO }}/weather-frontend:${{ github.sha }}"
+          echo "IMAGE=$IMAGE" >> $GITHUB_ENV
+          docker build -t "$IMAGE" ./frontend
+
+      - name: Push Docker image
+        run: |
+          docker push "$IMAGE"
+
+      - name: Connect to GKE
+        run: |
+          gcloud container clusters get-credentials ${{ secrets.GKE_CLUSTER_NAME }} \
+            --region ${{ secrets.GKE_LOCATION }} \
+            --project ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Update image in GKE deployment
+        run: |
+          kubectl -n ${{ secrets.GKE_NAMESPACE }} set image deployment/${{ secrets.FRONTEND_DEPLOYMENT_NAME }} \
+          weather-frontend="$IMAGE"
+
+      - name: Verify rollout
+        run: |
+          kubectl -n ${{ secrets.GKE_NAMESPACE }} rollout status deployment/${{ secrets.FRONTEND_DEPLOYMENT_NAME }}

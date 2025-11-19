@@ -15,3 +15,5 @@ __pycache__/
 terraform.tfvars
 
 zip/
+
+cicd-key.json
