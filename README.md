@@ -195,6 +195,8 @@ This project uses the following GCP services:
 
 - `DEPLOYMENT.md`: Exact step-by-step deployment guide
 
+- `PROJECT_REPORT.md`: Project Report
+
 - `backend/api/README.md`: API documentation
 
 ---
