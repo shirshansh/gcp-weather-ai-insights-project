@@ -59,15 +59,17 @@ graph TD;
 # Repository Structure
 
     gcp-weather-ai-insights-project/
+    ├── .github/workflows/ # CI/CD yml files
     ├── backend/
     │ ├── api/ # Cloud Run backend API
     | | └── README.md # API Documentation
     │ ├── weather_collector/ # Cloud Function 1
     │ └── weather_processor/ # Cloud Function 2
     ├── frontend/ # React UI
-    | └── k8s/ # Deployment + Service manifests
+    | └── k8s/ # Kubernetes manifests
     ├── infra/ # Terraform IaC
-    ├──DEPLOYMENT.md # Deployment Documentation
+    ├── DEPLOYMENT.md # Deployment Documentation
+    ├── PROJECT_REPORT.md # Project Report
     └── README.md # (this file)
 
 ---
