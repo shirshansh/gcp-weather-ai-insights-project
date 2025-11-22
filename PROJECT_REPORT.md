@@ -68,31 +68,31 @@ The final architecture followed a clean, modular, event-driven pattern:
 
   **Terraform** used to deploy:
 
-  GCS
+  - GCS
 
-  Secret Manager
+  - Secret Manager
 
-  Cloud Functions (Gen 2)
+  - Cloud Functions (Gen 2)
 
-  Cloud Scheduler
+  - Cloud Scheduler
 
-  IAM Policies
+  - IAM Policies
 
-  Service Accounts
+  - Service Accounts
 
-  Eventarc triggers
+  - Eventarc triggers
 
-  Artifact Registry
+  - Artifact Registry
 
-  GKE Cluster
+  - GKE Cluster
 
 - ## CI/CD Pipeline
 
   **GitHub Actions workflows**:
 
-  Backend auto-deploys to Cloud Run
+  - Backend auto-deploys to Cloud Run
 
-  Frontend auto-deploys to GKE
+  - Frontend auto-deploys to GKE
 
   CI/CD uses a dedicated service account.
 

@@ -16,6 +16,13 @@ LOCATION = "asia-south1"
 storage_client = storage.Client()
 genai_client = genai.Client(vertexai=True, project=PROJECT_ID, location=LOCATION)
 
+def log_json(message: dict):
+    """
+    Logs a dictionary as JSON to stdout for Cloud Logging.
+    """
+
+    print(json.dumps(message), flush=True)
+
 def clean_json_response(text):
     """
     Cleans model output to extract valid JSON from Markdown or noisy responses.
@@ -79,30 +86,34 @@ def process_weather_data(event, context):
     Cloud Function triggered when a new raw weather JSON is uploaded.
     Reads the file, calls Vertex AI to summarize, and saves processed JSON to GCS.
     """
+
+    log_json({"event": "processor_start", "bucket": event.get("bucket"), "file": event.get("name")})
     
     if not PROJECT_ID:
+        log_json({"event": "missing_env", "variable": "PROJECT_ID"})
         raise RuntimeError("PROJECT_ID not set")
     if not BUCKET_NAME:
+        log_json({"event": "missing_env", "variable": "GCS_BUCKET_NAME"})
         raise RuntimeError("GCS_BUCKET_NAME not set")
     
     try:
         bucket_name = event.get("bucket")
         file_name = event.get("name")
-        print(f"Triggered by file: gs://{bucket_name}/{file_name}")
+        log_json({"event": "triggered_by_file", "bucket": bucket_name, "file": file_name})
 
         # Checking that this is from our intended bucket and folder
         if bucket_name != BUCKET_NAME or not file_name.startswith(RAW_PREFIX):
-            print("Skipping unrelated file or bucket.")
+            log_json({"event": "ignored_file", "bucket": bucket_name, "file": file_name})
             return ("ignored", 200)
         
         # Loading raw data
         bucket = storage_client.bucket(bucket_name)
         blob = bucket.blob(file_name)
         raw_data = json.loads(blob.download_as_text())
-        print("✅ Raw weather data loaded successfully.")
+        log_json({"event": "raw_load_success", "file": file_name})
 
         prompt = build_prompt(raw_data)
-        print("Sending prompt to Vertex AI...")
+        log_json({"event": "vertex_request_start", "model": MODEL_NAME})
 
         response = genai_client.models.generate_content(
             model=MODEL_NAME,
@@ -110,7 +121,7 @@ def process_weather_data(event, context):
         )
 
         result_text = response.text.strip()
-        print("Model Response Received.")
+        log_json({"event": "vertex_response_received"})
 
         result_text = clean_json_response(result_text)
 
@@ -131,21 +142,21 @@ def process_weather_data(event, context):
             content_type="application/json"
         )
 
-        print(f"✅ Processed file saved to gs://{bucket_name}/{output_name}")
+        log_json({"event": "processor_success", "output_file": output_name})
         return {"status": "ok", "file": output_name}
     
     except json.JSONDecodeError:
-        print("⚠️ Model output was not valid JSON.")
+        log_json({"event": "invalid_json_output", "raw_output": result_text})
 
         # Saving the invalid output
         timestamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
         debug_name = f"{PROCESSED_PREFIX}invalid-json-{timestamp}.txt"
         bucket = storage_client.bucket(BUCKET_NAME)
         bucket.blob(debug_name).upload_from_string(result_text, content_type="text/plain")
-        print(f"⚠️ Saved invalid output to gs://{BUCKET_NAME}/{debug_name}")
+        log_json({"event": "debug_saved", "debug_file": debug_name})
         return {"error": "invalid_json", "debug_file": debug_name}, 500
 
     except Exception as e:
-        print(f"❌ Error: {e}")
+        log_json({"event": "processor_error", "error": str(e)})
         return {"error": f"{e}"}, 500
         
