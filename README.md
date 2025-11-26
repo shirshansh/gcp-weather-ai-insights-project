@@ -39,6 +39,8 @@ This system automatically:
 
 Everything is built using **least-privilege IAM**, **secure secret management**, and **cost-optimized serverless + containerized components**.
 
+![AI Weather Insights Dashboard](assets/AI%20Weather%20Insights%20Dashboard.png)
+
 ---
 
 # High Level Architecture Diagram
@@ -60,13 +62,15 @@ graph TD;
 
     gcp-weather-ai-insights-project/
     ├── .github/workflows/ # CI/CD yml files
+    ├── assets/ # Assets
     ├── backend/
     │ ├── api/ # Cloud Run backend API
     | | └── README.md # API Documentation
     │ ├── weather_collector/ # Cloud Function 1
     │ └── weather_processor/ # Cloud Function 2
     ├── frontend/ # React UI
-    | └── k8s/ # Kubernetes manifests
+    | ├── k8s/ # Kubernetes manifests
+    | └── Dockerfile # Docker file for Frontend Image Building
     ├── infra/ # Terraform IaC
     ├── DEPLOYMENT.md # Deployment Documentation
     ├── PROJECT_REPORT.md # Project Report
